@@ -5,8 +5,7 @@ import numpy as np
 import cv2
 import logging
 
-from .model import Net
-from .resnet import resnet50
+from .model import Net, BaseNet
 
 class Extractor(object):
     def __init__(self, model_path, use_cuda=True):
@@ -51,7 +50,7 @@ class Extractor(object):
 
 class ResNet50Extractor(object):
     def __init__(self, use_cuda=True):
-        self.net = resnet50(pretrained=True)
+        self.net = BaseNet(reid=True)
         self.device = "cuda" if torch.cuda.is_available() and use_cuda else "cpu"
         logger = logging.getLogger("root.tracker")
         logger.info("Loading ResNet50 Model Pretrained on ImageNet")
@@ -85,8 +84,6 @@ class ResNet50Extractor(object):
         with torch.no_grad():
             im_batch = im_batch.to(self.device)
             features = self.net(im_batch)
-            features = F.avg_pool2d(features, features.shape[2:])
-            features = features.view(features.size(0), -1)
         return features.cpu().numpy()
 
 

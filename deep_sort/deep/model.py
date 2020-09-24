@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .resnet import resnet50
+
 class BasicBlock(nn.Module):
     def __init__(self, c_in, c_out,is_downsample=False):
         super(BasicBlock,self).__init__()
@@ -91,6 +93,24 @@ class Net(nn.Module):
             x = x.div(x.norm(p=2,dim=1,keepdim=True))
             return x
         # classifier
+        x = self.classifier(x)
+        return x
+
+class BaseNet(nn.Module):
+    def __init__(self, num_classes=751 ,reid=False):
+        super(BaseNet,self).__init__()
+        self.reid = reid
+
+        self.extractor = resnet50(pretrained=True, last_conv_stride=2)
+        self.classifier = nn.Linear(2048, num_classes)
+
+    def forward(self, x):
+        x = self.extractor(x)
+        x = F.avg_pool2d(x, x.shape[2:])
+        x = x.view(x.size(0), -1)
+        # B x 2048
+        if self.reid:
+            return x
         x = self.classifier(x)
         return x
 
