@@ -2,6 +2,9 @@
 __pycache__/
 build/
 *.egg-info
+.vscode/
+image_sequence/
+output/
 
 
 # Files

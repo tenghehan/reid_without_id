@@ -6,6 +6,7 @@ import torch
 import warnings
 import numpy as np
 
+from PIL import Image
 from detector import build_detector
 from deep_sort import build_tracker
 from utils.draw import draw_boxes
@@ -14,11 +15,11 @@ from utils.log import get_logger
 from utils.io import write_results
 
 
-class VideoTracker(object):
-    def __init__(self, cfg, args, video_path):
+class ImageSequenceTracker(object):
+    def __init__(self, cfg, args, images_path):
         self.cfg = cfg
         self.args = args
-        self.video_path = video_path
+        self.images_path = images_path
         self.logger = get_logger("root")
 
         use_cuda = args.use_cuda and torch.cuda.is_available()
@@ -29,40 +30,32 @@ class VideoTracker(object):
             cv2.namedWindow("test", cv2.WINDOW_NORMAL)
             cv2.resizeWindow("test", args.display_width, args.display_height)
 
-        if args.cam != -1:
-            print("Using webcam " + str(args.cam))
-            self.vdo = cv2.VideoCapture(args.cam)
-        else:
-            self.vdo = cv2.VideoCapture()
+       
+        assert os.path.isdir(self.images_path), "Path error"
+        self.imgs_filenames = sorted(os.listdir(os.path.join(self.images_path, 'img1')))
         self.detector = build_detector(cfg, use_cuda=use_cuda)
         self.deepsort = build_tracker(cfg, use_cuda=use_cuda)
         self.class_names = self.detector.class_names
 
     def __enter__(self):
-        if self.args.cam != -1:
-            ret, frame = self.vdo.read()
-            assert ret, "Error: Camera error"
-            self.im_width = frame.shape[0]
-            self.im_height = frame.shape[1]
+        first_img = cv2.imread(os.path.join(self.images_path, 'img1', self.imgs_filenames[0]))
+        self.im_width = first_img.shape[1]
+        self.im_height = first_img.shape[0]
 
-        else:
-            assert os.path.isfile(self.video_path), "Path error"
-            self.vdo.open(self.video_path)
-            self.im_width = int(self.vdo.get(cv2.CAP_PROP_FRAME_WIDTH))
-            self.im_height = int(self.vdo.get(cv2.CAP_PROP_FRAME_HEIGHT))
-            assert self.vdo.isOpened()
 
         if self.args.save_path:
             os.makedirs(self.args.save_path, exist_ok=True)
 
             # path of saved video and results
-            filename, extension = os.path.splitext(os.path.basename(self.args.VIDEO_PATH))
+            filename = os.path.split(self.images_path)[-1]
+            assert filename != '', "Filename error"
             self.save_video_path = os.path.join(self.args.save_path, f'{filename}.avi')
             self.save_results_path = os.path.join(self.args.save_path, f'{filename}.txt')
+            self.save_json_path = os.path.join(self.args.save_path, f'{filename}.json')
 
             # create video writer
             fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-            self.writer = cv2.VideoWriter(self.save_video_path, fourcc, 20, (self.im_width, self.im_height))
+            self.writer = cv2.VideoWriter(self.save_video_path, fourcc, self.args.fps, (self.im_width, self.im_height))
 
             # logging
             self.logger.info("Save results to {}".format(self.args.save_path))
@@ -76,13 +69,13 @@ class VideoTracker(object):
     def run(self):
         results = []
         idx_frame = 0
-        while self.vdo.grab():
+        for img_filename in self.imgs_filenames:
             idx_frame += 1
             if idx_frame % self.args.frame_interval:
                 continue
 
-            start = time.time()
-            _, ori_im = self.vdo.retrieve()
+            start = time.time() 
+            ori_im = cv2.imread(os.path.join(self.images_path, 'img1', img_filename))
             im = cv2.cvtColor(ori_im, cv2.COLOR_BGR2RGB)
 
             # do detection
@@ -95,7 +88,7 @@ class VideoTracker(object):
             # bbox dilation just in case bbox too small, delete this line if using a better pedestrian detector
             bbox_xywh[:, 3:] *= 1.2
             cls_conf = cls_conf[mask]
-
+ 
             # do tracking
             outputs = self.deepsort.update(bbox_xywh, cls_conf, im)
 
@@ -130,7 +123,7 @@ class VideoTracker(object):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("VIDEO_PATH", type=str)
+    parser.add_argument("IMAGES_PATH", type=str)
     parser.add_argument("--config_detection", type=str, default="./configs/yolov3.yaml")
     parser.add_argument("--config_deepsort", type=str, default="./configs/deep_sort.yaml")
     # parser.add_argument("--ignore_display", dest="display", action="store_false", default=True)
@@ -138,9 +131,9 @@ def parse_args():
     parser.add_argument("--frame_interval", type=int, default=1)
     parser.add_argument("--display_width", type=int, default=800)
     parser.add_argument("--display_height", type=int, default=600)
+    parser.add_argument("--fps", type=int, default=20)
     parser.add_argument("--save_path", type=str, default="./output_imageNet/")
     parser.add_argument("--cpu", dest="use_cuda", action="store_false", default=True)
-    parser.add_argument("--camera", action="store", dest="cam", type=int, default="-1")
     return parser.parse_args()
 
 
@@ -150,5 +143,5 @@ if __name__ == "__main__":
     cfg.merge_from_file(args.config_detection)
     cfg.merge_from_file(args.config_deepsort)
 
-    with VideoTracker(cfg, args, video_path=args.VIDEO_PATH) as vdo_trk:
-        vdo_trk.run()
+    with ImageSequenceTracker(cfg, args, images_path=args.IMAGES_PATH) as imgs_trk:
+        imgs_trk.run()

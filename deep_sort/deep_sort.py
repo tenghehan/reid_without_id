@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from .deep.feature_extractor import Extractor
+from .deep.feature_extractor import Extractor, ResNet50Extractor
 from .sort.nn_matching import NearestNeighborDistanceMetric
 from .sort.preprocessing import non_max_suppression
 from .sort.detection import Detection
@@ -16,7 +16,8 @@ class DeepSort(object):
         self.min_confidence = min_confidence
         self.nms_max_overlap = nms_max_overlap
 
-        self.extractor = Extractor(model_path, use_cuda=use_cuda)
+        # self.extractor = Extractor(model_path, use_cuda=use_cuda)
+        self.extractor = ResNet50Extractor(use_cuda=use_cuda)
 
         max_cosine_distance = max_dist
         nn_budget = 100

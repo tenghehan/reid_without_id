@@ -22,7 +22,7 @@ import warnings
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--VIDEO_PATH", type=str, default="./demo/ped.avi")
+    parser.add_argument("VIDEO_PATH", type=str, default="./demo/ped.avi")
     parser.add_argument("--config_detection", type=str, default="./configs/yolov3.yaml")
     parser.add_argument("--config_deepsort", type=str, default="./configs/deep_sort.yaml")
     parser.add_argument("--write-fps", type=int, default=20)
@@ -83,7 +83,8 @@ class VideoTracker(object):
 
     def run(self):
         idx_frame = 0
-        pbar = tqdm(total=self.total_frames + 1)
+        # pbar = tqdm(total=self.total_frames + 1)
+        pbar = self.total_frames + 1
         while self.vdo.grab():
             if idx_frame % args.frame_interval == 0:
                 _, ori_im = self.vdo.retrieve()
@@ -93,7 +94,7 @@ class VideoTracker(object):
                 self.detection(frame=ori_im, frame_id=frame_id)
                 self.save_frame(ori_im)
                 idx_frame += 1
-            pbar.update()
+            # pbar.update()
         self.logger.json_output(self.json_output)
 
     @tik_tok
