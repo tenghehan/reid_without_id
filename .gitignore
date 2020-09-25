@@ -5,6 +5,7 @@ build/
 .vscode/
 image_sequence/
 output/
+test/
 
 
 # Files
