@@ -2,8 +2,8 @@ import sys
 import time
 from PIL import Image, ImageDraw
 #from models.tiny_yolo import TinyYoloNet
-from yolo_utils import *
-from darknet import Darknet
+from .yolo_utils import *
+from .darknet import Darknet
 
 import cv2
 
