@@ -7,6 +7,7 @@ import random
 
 from tqdm import tqdm
 from utils.log import get_logger
+from utils.txt_logger import txt_logger
 
 
 class Range(object):
@@ -21,6 +22,7 @@ class Range(object):
 class ReIDDataConverter():
     def __init__(self, args):
         self.logger = get_logger('root')
+        self.txt_logger = txt_logger(os.path.join(args.save_path, args.dataset_name, 'info.txt'))
 
         self.dataset_name = args.dataset_name
         self.images_path = os.path.join(args.image_sequence_path, self.dataset_name, "img1")
@@ -30,6 +32,8 @@ class ReIDDataConverter():
         assert os.path.isfile(self.track_result_path), "Tracking result path error"
 
         self.save_path = os.path.join(args.save_path, self.dataset_name)
+        if os.path.exists(self.save_path):
+            shutil.rmtree(self.save_path)
         os.makedirs(os.path.join(self.save_path, 'train'), exist_ok=True)
         os.makedirs(os.path.join(self.save_path, 'test'), exist_ok=True)
         os.makedirs(os.path.join(self.save_path, 'query'), exist_ok=True)
@@ -124,6 +128,9 @@ class ReIDDataConverter():
         return query_size
 
     def run(self):
+        self.txt_logger.add_info('sampling rate: {}'.format(self.sampling_rate))
+        self.txt_logger.add_info('partition rate: {}'.format(self.partition_rate))
+
         self.track_result, self.id_set = self.process_track_result()
 
         self.logger.info('generating reid dataset ...')
@@ -134,11 +141,13 @@ class ReIDDataConverter():
 
         self.logger.info('reid dataset {} generated'.format(self.dataset_name))
 
-        self.logger.info('trainset: {} identities, {} images'.format(
+        self.txt_logger.add_info('trainset: {} identities, {} images'.format(
             len(self.id_set['train_id_set']), trainset_size))
-        self.logger.info('testset: {} identities, {} images'.format(
+        self.txt_logger.add_info('testset: {} identities, {} images'.format(
             len(self.id_set['test_id_set']), (testset_size -  query_size)))
-        self.logger.info('query: {} images'.format(query_size))
+        self.txt_logger.add_info('query: {} images'.format(query_size))
+
+        self.txt_logger.output()
 
 
 def parse_args():
@@ -146,9 +155,9 @@ def parse_args():
     parser.add_argument("--image_sequence_path", type=str, default="./image_sequence/")
     parser.add_argument("--track_result_path", type=str, default="./output/")
     parser.add_argument("--save_path", type=str, default="./reid_dataset/")
-    parser.add_argument("--sampling_rate", type=float, default=0.8, choices=[Range(0.0, 1.0)])
+    parser.add_argument("--sampling_rate", type=float, default=1, choices=[Range(0.0, 1.0)])
     parser.add_argument("--dataset_name", type=str)
-    parser.add_argument("--partition_rate", type=float, default=0.5, choices=[Range(0.0, 1.0)], help="percentage of training set")
+    parser.add_argument("--partition_rate", type=float, default=0.5, choices=[Range(0.0, 1.0)], help="percentage (identity) of training set")
 
     return parser.parse_args()
 
