@@ -44,18 +44,19 @@ class ReIDDataConverter():
         self.partition_rate = args.partition_rate
         self.track_result = []
         self.id_set = {'train_id_set': set(), 'test_id_set': set()}
+        self.id_list = []
         self.id_images_details = {}
 
-    def partition_train_test(self, identity):
-        if identity in self.id_set['train_id_set'] or identity in self.id_set['test_id_set']:
-            return
+    def partition_train_test(self, id_list):
+        total_num = len(id_list)
+        train_list = random.sample(id_list, int(total_num * self.partition_rate))
+        train_set = set(train_list)
+        self.id_set = {
+            'train_id_set': train_set,
+            'test_id_set': set(id_list) - train_set,
+        }
 
-        if random.random() <= self.partition_rate:
-            self.id_set['train_id_set'].add(identity)
-        else:
-            self.id_set['test_id_set'].add(identity)
-
-        if identity not in self.id_images_details.keys():
+        for identity in self.id_list:
             self.id_images_details[identity] = []
 
     def sample_frames(self):
@@ -81,7 +82,10 @@ class ReIDDataConverter():
                 'bbox': bbox
             }
             self.track_result.append(info_dict)
-            self.partition_train_test(identity)
+            if identity not in self.id_list:
+                self.id_list.append(identity)
+
+        self.partition_train_test(self.id_list)
         return self.track_result, self.id_set
 
     def generate_reid_dataset(self):
