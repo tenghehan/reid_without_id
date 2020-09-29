@@ -1,3 +1,7 @@
+from fastreid.utils.checkpoint import Checkpointer
+from fastreid.modeling.meta_arch.build import build_model
+from fastreid.config.config import get_cfg
+from typing import Optional
 import torch
 import torchvision.transforms as transforms
 import torch.nn.functional as F
@@ -85,6 +89,51 @@ class ResNet50Extractor(object):
             im_batch = im_batch.to(self.device)
             features = self.net(im_batch)
         return features.cpu().numpy()
+
+
+class ResNet50BNNeckExtractor(object):
+    def __init__(self, fastreid_config_path: str, model_path: Optional[str], use_cuda=True):
+        cfg = get_cfg()
+        cfg.merge_from_file(fastreid_config_path)
+        self.net = build_model(cfg)
+
+        self.device = "cuda" if torch.cuda.is_available() and use_cuda else "cpu"
+        logger = logging.getLogger("root.tracker")
+        self.net.to(self.device)
+        self.net.eval()
+
+        if model_path is not None:
+            logger.info(f"Loading weights from {model_path}")
+            Checkpointer(self.net).load(model_path)
+        else:
+            logger.info("Loading ResNet50 Model Pretrained on ImageNet")
+
+        height, width = cfg.INPUT.SIZE_TEST
+        self.size = (width, height)
+        logger.info(f"Image size: {self.size}")
+        self.norm = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+        ])
+        
+
+
+    def _preprocess(self, im_crops):
+
+        def _resize(im, size):
+            return cv2.resize(im.astype(np.float32)/255., size)
+
+        im_batch = torch.cat([self.norm(_resize(im, self.size)).unsqueeze(0) for im in im_crops], dim=0).float()
+        return im_batch
+
+
+    def __call__(self, im_crops):
+        im_batch = self._preprocess(im_crops)
+        with torch.no_grad():
+            im_batch = im_batch.to(self.device)
+            features = self.net(im_batch)
+        f = features.cpu().numpy()
+        return f
 
 
 if __name__ == '__main__':

@@ -8,6 +8,8 @@ image_sequence/
 output/
 test/
 reid_dataset/
+logs/
+datasets/
 
 
 # Files

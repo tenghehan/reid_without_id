@@ -104,7 +104,7 @@ class ReIDDataConverter():
             x2 = track['bbox'][0] + track['bbox'][2]
             y2 = track['bbox'][1] + track['bbox'][3]
             cropped_img = frame[y1:y2, x1:x2]
-            img_name = str(track['identity']).zfill(5) + '_' + str(idx_frame).zfill(6) + '.jpg'
+            img_name = str(track['identity']).zfill(5) + '_c1_' + str(idx_frame).zfill(6) + '.jpg'
             self.id_images_details[track['identity']].append(img_name)
 
             # save the person image into reid train/test dataset

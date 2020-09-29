@@ -134,6 +134,8 @@ def parse_args():
     parser.add_argument("--fps", type=int, default=20)
     parser.add_argument("--save_path", type=str, default="./output/")
     parser.add_argument("--cpu", dest="use_cuda", action="store_false", default=True)
+    parser.add_argument("--config_file", type=str, required=True)
+    parser.add_argument("--model_path", type=str, default=None)
     return parser.parse_args()
 
 
@@ -142,6 +144,8 @@ if __name__ == "__main__":
     cfg = get_config()
     cfg.merge_from_file(args.config_detection)
     cfg.merge_from_file(args.config_deepsort)
+    cfg.DEEPSORT.FASTREID_CONFIG_PATH = args.config_file
+    cfg.DEEPSORT.MODEL_PATH = args.model_path
 
     with ImageSequenceTracker(cfg, args, images_path=args.IMAGES_PATH) as imgs_trk:
         imgs_trk.run()

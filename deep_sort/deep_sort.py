@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from .deep.feature_extractor import Extractor, ResNet50Extractor
+from .deep.feature_extractor import Extractor, ResNet50BNNeckExtractor, ResNet50Extractor
 from .sort.nn_matching import NearestNeighborDistanceMetric
 from .sort.preprocessing import non_max_suppression
 from .sort.detection import Detection
@@ -12,12 +12,12 @@ __all__ = ['DeepSort']
 
 
 class DeepSort(object):
-    def __init__(self, model_path, max_dist=0.2, min_confidence=0.3, nms_max_overlap=1.0, max_iou_distance=0.7, max_age=70, n_init=3, nn_budget=100, use_cuda=True):
+    def __init__(self, model_path, fastreid_config_path, max_dist=0.2, min_confidence=0.3, nms_max_overlap=1.0, max_iou_distance=0.7, max_age=70, n_init=3, nn_budget=100, use_cuda=True):
         self.min_confidence = min_confidence
         self.nms_max_overlap = nms_max_overlap
 
         # self.extractor = Extractor(model_path, use_cuda=use_cuda)
-        self.extractor = ResNet50Extractor(use_cuda=use_cuda)
+        self.extractor = ResNet50BNNeckExtractor(fastreid_config_path=fastreid_config_path, model_path=model_path, use_cuda=use_cuda)
 
         max_cosine_distance = max_dist
         nn_budget = 100
