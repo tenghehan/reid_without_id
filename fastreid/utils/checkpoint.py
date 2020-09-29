@@ -100,6 +100,8 @@ class Checkpointer(object):
 
         checkpoint = self._load_file(path)
         self._load_model(checkpoint)
+        self.logger.info("Finish loading checkpoint from {}".format(path))
+        
         for key, obj in self.checkpointables.items():
             if key in checkpoint:
                 self.logger.info("Loading {} from {}".format(key, path))

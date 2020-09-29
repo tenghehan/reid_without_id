@@ -4,12 +4,12 @@ build/
 *.egg-info
 .vscode/
 .idea/
-image_sequence/
-output/
-test/
-reid_dataset/
-logs/
-datasets/
+/image_sequence/
+/output/
+/test/
+/reid_dataset/
+/logs/
+/datasets/
 
 
 # Files

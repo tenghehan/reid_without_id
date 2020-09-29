@@ -49,6 +49,7 @@ def default_argument_parser():
         action="store_true",
         help="whether to attempt to finetune from the trained model",
     )
+    parser.add_argument("--model_path", type=str, default=None)
     parser.add_argument(
         "--resume",
         action="store_true",
@@ -66,6 +67,9 @@ def default_argument_parser():
     # so that users are aware of orphan processes by seeing the port occupied.
     port = 2 ** 15 + 2 ** 14 + hash(os.getuid() if sys.platform != "win32" else 1) % 2 ** 14
     parser.add_argument("--dist-url", default="tcp://127.0.0.1:{}".format(port))
+
+    parser.add_argument("--specific_dataset", type=str, default=None)
+    
     parser.add_argument(
         "opts",
         help="Modify config options using the command-line",
@@ -323,7 +327,7 @@ class DefaultTrainer(SimpleTrainer):
 
         if comm.is_main_process():
             # run writers in the end, so that evaluation metrics are written
-            ret.append(hooks.PeriodicWriter(self.build_writers(), 200))
+            ret.append(hooks.PeriodicWriter(self.build_writers(), 20))
 
         return ret
 
@@ -376,7 +380,7 @@ class DefaultTrainer(SimpleTrainer):
         """
         model = build_model(cfg)
         logger = logging.getLogger(__name__)
-        logger.info("Model:\n{}".format(model))
+        # logger.info("Model:\n{}".format(model))
         return model
 
     @classmethod

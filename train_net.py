@@ -6,6 +6,7 @@
 """
 
 import sys
+import os.path as osp
 
 sys.path.append('.')
 
@@ -21,6 +22,10 @@ def setup(args):
     cfg = get_cfg()
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
+
+    cfg.SPECIFIC_DATASET = args.specific_dataset
+    if args.specific_dataset is not None:
+        cfg.OUTPUT_DIR = osp.join(cfg.OUTPUT_DIR, args.specific_dataset)
     cfg.freeze()
     default_setup(cfg, args)
     return cfg
@@ -40,7 +45,12 @@ def main(args):
         return res
 
     trainer = DefaultTrainer(cfg)
-    if args.finetune: Checkpointer(trainer.model).load(cfg.MODEL.WEIGHTS)  # load trained model to funetune
+    if args.finetune: 
+        assert args.model_path is not None
+        cfg.defrost()
+        cfg.MODEL.WEIGHTS = args.model_path
+        C = Checkpointer(trainer.model)
+        C.load(cfg.MODEL.WEIGHTS)  # load trained model to funetune
 
     trainer.resume_or_load(resume=args.resume)
     return trainer.train()

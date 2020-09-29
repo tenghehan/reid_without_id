@@ -113,6 +113,7 @@ class NaiveIdentitySampler(Sampler):
         self.batch_size = batch_size
         self.num_instances = num_instances
         self.num_pids_per_batch = batch_size // self.num_instances
+        assert self.num_instances * self.num_pids_per_batch == batch_size
 
         self.index_pid = defaultdict(list)
         self.pid_cam = defaultdict(list)

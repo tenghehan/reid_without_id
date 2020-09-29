@@ -103,9 +103,12 @@ class ReIDDataConverter():
             y1 = track['bbox'][1]
             x2 = track['bbox'][0] + track['bbox'][2]
             y2 = track['bbox'][1] + track['bbox'][3]
+            if x2 <= x1 or y2 <= y1:
+                continue
             cropped_img = frame[y1:y2, x1:x2]
             img_name = str(track['identity']).zfill(5) + '_c1_' + str(idx_frame).zfill(6) + '.jpg'
             self.id_images_details[track['identity']].append(img_name)
+
 
             # save the person image into reid train/test dataset
             if track['identity'] in self.id_set['train_id_set']:
@@ -122,7 +125,7 @@ class ReIDDataConverter():
         for identity in self.id_set['test_id_set']:
             if len(self.id_images_details[identity]) > 1:
                 shutil.move(os.path.join(self.save_path, 'test', self.id_images_details[identity][0]),
-                            os.path.join(self.save_path, 'query', self.id_images_details[identity][0]))
+                            os.path.join(self.save_path, 'query', self.id_images_details[identity][0].replace("_c1_", "_c2_")))
                 query_size += 1
 
         return query_size
@@ -157,7 +160,7 @@ def parse_args():
     parser.add_argument("--save_path", type=str, default="./reid_dataset/")
     parser.add_argument("--sampling_rate", type=float, default=1, choices=[Range(0.0, 1.0)])
     parser.add_argument("--dataset_name", type=str)
-    parser.add_argument("--partition_rate", type=float, default=0.5, choices=[Range(0.0, 1.0)], help="percentage (identity) of training set")
+    parser.add_argument("--partition_rate", type=float, default=0.8, choices=[Range(0.0, 1.0)], help="percentage (identity) of training set")
 
     return parser.parse_args()
 
