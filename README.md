@@ -61,7 +61,7 @@ note: 在我们生成的数据集中实际上只有一个camera，但是为了�
 
 运行：
 ```
---config_file (声明模型结构的yaml文件路径，暂时使用'fastreid_configs/MOT/bagtricks_R50.yml'(ResNet50 + BNNeck))
+--config-file (声明模型结构的yaml文件路径，暂时使用'fastreid_configs/MOT/bagtricks_R50.yml'(ResNet50 + BNNeck))
 
 --specific_dataset (例MOT16-05)
 
@@ -79,9 +79,63 @@ logs/mot/bagtricks_R50/MOT16-05
     model_final.pth
 ```
 
+功能：测试reid模型的准确度(DukeMTMC Market1501)
+
+运行：
+```
+--eval_only
+--config-file (声明模型结构的yaml文件路径，暂时使用'fastreid_configs/MOT/bagtricks_R50.yml'(ResNet50 + BNNeck))
+DATASETS.TESTS ("DukeMTMC",) or ("Market1501",) 
+MODEL.WEIGHTS logs/mot/bagtricks_R50/MOT16-06/model_final.pth
+OUTPUT_DIR "logs/mot/bagtricks_R50/MOT1-16-06/dukemtmc or market1501"
+```
+
+输出：
+
+```
+logs/mot/bagtricks_R50/MOT16-05/dukemtmc or market1501
+    config.yaml
+    log.txt
+```
+
+加速：
+
+```
+https://github.com/JDAI-CV/fast-reid/blob/master/docs/GETTING_STARTED.md#compile-with-cython-to-accelerate-evalution
+```
+
+### eval_motchallenge.py
+
+MOTChallenge 官方的 evaluation 脚本：https://github.com/dendorferpatrick/MOTChallengeEvalKit/blob/master/MOT/README.md
+
+上述 README 中提到的另一个 MOT metrics 计算的库，指标计算与官方没有差异：https://github.com/cheind/py-motmetrics
+
+在虚拟环境中 conda install numpy scipy pandas，pip install motmetrics 后，
+```
+python -m motmetrics.apps.eval_motchallenge image_sequence/ output/
+```
+指标主要关注最前面三个
+
+```
+image_sequence/
+   MOT16-05/
+     gt/gt.txt
+   MOT16-12/
+     gt/gt.txt
+   ...
+
+output/
+   MOT16-05.txt
+   MOT16-12.txt
+   ...
+
+文件结构需要满足上述格式，脚本会自动根据名字对对应脚本作evaluate。
+```
+
 ## 自动化脚本使用
 
-### 思路
+### track and train
+#### 思路
 ```
     easy to hard: dataset01, dataset02,...
     ImageNet pretrained reid model -> model_0
@@ -94,8 +148,8 @@ logs/mot/bagtricks_R50/MOT16-05
 
     ...
 ```
-### 使用
-#### 1.configs/auto.yaml
+#### 使用
+##### 1.configs/auto.yaml
 ```
 model_config: fastreid_configs/MOT/bagtricks_R50.yml
 datasets:
@@ -111,18 +165,85 @@ datasets:
     - name: MOT16-05
       fps: 14
       sampling_rate: 0.5
-    - name: MOT16-12
-      fps: 30
-      sampling_rate: 0.2
-    - name: MOT16-06
-      fps: 14
-      sampling_rate: 0.5
+    ...
 ```
-#### 2.auto.py
+##### 2.auto_train.py
 ```
-python auto.py --config_file configs/auto.yaml --dry-run
+python auto_train.py --config_file configs/auto.yaml --dry-run
 只输出即将被顺序执行的若干命令
 
-python auto.py --config_file configs/auto.yaml
+python auto_train.py --config_file configs/auto.yaml
 按照yaml中的数据集开始完整的流程
 ```
+
+### reid evaluate
+
+#### 思路
+```
+    将训练得到的reid model作批量化的evaluation，包括DukeMTMC和Market1501
+```
+
+#### 使用
+##### 1.configs/auto.yaml
+```
+model_config: fastreid_configs/MOT/bagtricks_R50.yml
+datasets:
+    - name: campus4-c0
+      fps: 25
+      sampling_rate: 0.2
+    - name: terrace1-c0
+      fps: 25
+      sampling_rate: 0.2
+    - name: passageway1-c0
+      fps: 25
+      sampling_rate: 0.2
+    - name: MOT16-05
+      fps: 14
+      sampling_rate: 0.5
+    ...
+```
+##### 2.auto_eval_reid.py
+```
+python auto_eval_reid.py --config_file configs/auto.yaml --dry-run
+只输出即将被顺序执行的若干命令
+
+python auto_eval_reid.py --config_file configs/auto.yaml
+按照yaml中的数据集开始完整的流程
+```
+
+### auto tracking
+
+#### 思路
+```
+    令model_n对dataset_n作tracking。
+    其中model_n是利用(reid_dataset_01, reid_dataset_02..., reid_dataset_(n-1))训练得到的模型。
+```
+
+#### 使用
+##### 1.configs/auto.yaml
+```
+model_config: fastreid_configs/MOT/bagtricks_R50.yml
+datasets:
+    - name: campus4-c0
+      fps: 25
+      sampling_rate: 0.2
+    - name: terrace1-c0
+      fps: 25
+      sampling_rate: 0.2
+    - name: passageway1-c0
+      fps: 25
+      sampling_rate: 0.2
+    - name: MOT16-05
+      fps: 14
+      sampling_rate: 0.5
+    ...
+```
+##### 2.auto_track.py
+```
+python auto_track.py --config_file configs/auto.yaml --dry-run
+只输出即将被顺序执行的若干命令
+
+python auto_track.py --config_file configs/auto.yaml
+按照yaml中的数据集开始完整的流程
+```
+

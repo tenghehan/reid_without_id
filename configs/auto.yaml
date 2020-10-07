@@ -18,3 +18,21 @@ datasets:
     - name: MOT16-06
       fps: 14
       sampling_rate: 0.5
+    - name: MOT16-09
+      fps: 30
+      sampling_rate: 0.2
+    - name: MOT16-11
+      fps: 30
+      sampling_rate: 0.2
+    - name: MOT16-13
+      fps: 25
+      sampling_rate: 0.2
+    - name: MOT16-10
+      fps: 30
+      sampling_rate: 0.2
+    - name: MOT16-02
+      fps: 30
+      sampling_rate: 0.2
+    - name: MOT16-04
+      fps: 30
+      sampling_rate: 0.2

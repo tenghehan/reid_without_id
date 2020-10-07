@@ -78,14 +78,16 @@ def step(index: int, dataset: Dataset):
 
 
 def main():
-    for i, dataset in enumerate(config.datasets):
-        step(i, dataset)
+
+    for i in range(args.start_index, len(config.datasets)):
+        step(i, config.datasets[i])
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--config-file", type=str, required=True)
     parser.add_argument("-n", "--dry-run", action="store_true")
+    parser.add_argument("--start_index", type=int, default=0)
 
     args = parser.parse_args()
     g_dry_run = args.dry_run

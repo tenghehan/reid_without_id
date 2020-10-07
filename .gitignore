@@ -10,6 +10,7 @@ build/
 /reid_dataset/
 /logs/
 /datasets/
+/trash/
 
 
 # Files
@@ -19,3 +20,4 @@ build/
 *.avi
 *.so
 *.txt
+*.c
