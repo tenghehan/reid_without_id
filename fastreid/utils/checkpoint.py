@@ -160,7 +160,7 @@ class Checkpointer(object):
         """
         if resume and self.has_checkpoint():
             path = self.get_checkpoint_file()
-        return self.load(path)
+            return self.load(path)
 
     def tag_last_checkpoint(self, last_filename_basename: str):
         """

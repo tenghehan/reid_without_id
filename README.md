@@ -66,7 +66,7 @@ note: 在我们生成的数据集中实际上只有一个camera，但是为了�
 --specific_dataset (例MOT16-05)
 
 --finetune
---model_path (以此路径下的model weights为基础继续训练模型)
+MODEL.WEIGHTS (以此路径下的model weights为基础继续训练模型)
 ```
 
 输出：

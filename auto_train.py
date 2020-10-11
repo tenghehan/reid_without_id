@@ -65,7 +65,7 @@ def invoke_train_net(index: int, dataset: Dataset):
         last_dataset_name = config.datasets[index - 1].name
         cmd.extend(["--finetune"])
         cmd.extend([
-            "--model_path",
+            "MODEL.WEIGHTS",
             osp.join("logs/mot/bagtricks_R50", last_dataset_name, "model_final.pth"),
         ])
     run(cmd)

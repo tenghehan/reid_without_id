@@ -46,9 +46,6 @@ def main(args):
 
     trainer = DefaultTrainer(cfg)
     if args.finetune: 
-        assert args.model_path is not None
-        cfg.defrost()
-        cfg.MODEL.WEIGHTS = args.model_path
         C = Checkpointer(trainer.model)
         C.load(cfg.MODEL.WEIGHTS)  # load trained model to funetune
 

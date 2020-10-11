@@ -49,7 +49,6 @@ def default_argument_parser():
         action="store_true",
         help="whether to attempt to finetune from the trained model",
     )
-    parser.add_argument("--model_path", type=str, default=None)
     parser.add_argument(
         "--resume",
         action="store_true",
