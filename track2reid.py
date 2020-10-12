@@ -72,7 +72,7 @@ class ReIDDataConverter():
     def process_track_result(self):
         for line in open(self.track_result_path):
             info = line.split(',')
-            idx_frame = int(info[0]) + 1
+            idx_frame = int(info[0])
             identity = int(info[1])
             # bbox: tlwh
             bbox = (int(info[2]), int(info[3]), int(info[4]), int(info[5]))
