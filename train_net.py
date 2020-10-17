@@ -36,7 +36,7 @@ def main(args):
 
     if args.eval_only:
         cfg.defrost()
-        cfg.MODEL.BACKBONE.PRETRAIN = False
+        cfg.MODEL.BACKBONE.PRETRAIN = args.imageNet
         model = DefaultTrainer.build_model(cfg)
 
         Checkpointer(model).load(cfg.MODEL.WEIGHTS)  # load trained model

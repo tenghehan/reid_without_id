@@ -106,7 +106,7 @@ class ResNet50BNNeckExtractor(object):
             logger.info(f"Loading weights from {model_path}")
             Checkpointer(self.net).load(model_path)
         else:
-            logger.info("Loading ResNet50 Model Pretrained on ImageNet")
+            logger.info("Loading ResNet50BNNeck Model Pretrained on ImageNet")
 
         height, width = cfg.INPUT.SIZE_TEST
         self.size = (width, height)
