@@ -1,3 +1,11 @@
+"""
+@author: tenghehan
+
+按照 configs/auto.yml 中的 datasets list顺序，对每个 dataset 执行：
+    1. yolov3_deepsort_ims.py
+    使用 MOT16-xx/model_final.pth 对 MOT16-xx 数据集作 tracking.
+    MOT16-xx/model_final.pth 是使用 [..., MOT16-xxx] 数据集序列训练得到的模型.
+"""
 #!/usr/bin/env python
 from typing import List
 from attr import dataclass

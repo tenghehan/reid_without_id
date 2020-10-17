@@ -1,3 +1,8 @@
+"""
+@author: tenghehan
+
+将 video 形式的视频数据转化成 image sequence 形式的数据.
+"""
 import cv2
 import os
 import argparse

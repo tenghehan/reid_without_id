@@ -1,3 +1,6 @@
+"""
+@author: tenghehan
+"""
 #!/usr/bin/env python
 from typing import List
 from attr import dataclass
@@ -55,14 +58,14 @@ def invoke_track2reid(dataset: Dataset):
     cmd = ["python", "track2reid.py"]
     cmd.extend(["--dataset_name", dataset.name])
     cmd.extend(["--sampling_rate", "%.2f" % dataset.sampling_rate])
-    cmd.extend(["--track_result_path", "./output_age10_hit2/"])
-    cmd.extend(["--save_path", "./reid_dataset_age10_hit2"])
+    cmd.extend(["--track_result_path", "./output/"])
+    cmd.extend(["--save_path", "./reid_dataset"])
     run(cmd)
 
 
 def step(index: int, dataset: Dataset):
     invoke_yolov3_deepsort_ims(index, dataset)
-    # invoke_track2reid(dataset)
+    invoke_track2reid(dataset)
 
 
 def main():

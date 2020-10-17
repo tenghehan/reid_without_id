@@ -1,3 +1,8 @@
+"""
+@author: tenghehan
+
+将 tracking 的 ground truth 绘制在图片序列上，并合成视频.
+"""
 import os.path as osp
 import os
 import cv2

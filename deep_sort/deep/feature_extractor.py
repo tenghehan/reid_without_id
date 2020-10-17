@@ -91,7 +91,7 @@ class ResNet50Extractor(object):
         return features.cpu().numpy()
 
 
-class ResNet50BNNeckExtractor(object):
+class FastReIDExtractor(object):
     def __init__(self, fastreid_config_path: str, model_path: Optional[str], use_cuda=True):
         cfg = get_cfg()
         cfg.merge_from_file(fastreid_config_path)
@@ -106,7 +106,7 @@ class ResNet50BNNeckExtractor(object):
             logger.info(f"Loading weights from {model_path}")
             Checkpointer(self.net).load(model_path)
         else:
-            logger.info("Loading ResNet50BNNeck Model Pretrained on ImageNet")
+            logger.info("Loading Model Pretrained on ImageNet")
 
         height, width = cfg.INPUT.SIZE_TEST
         self.size = (width, height)

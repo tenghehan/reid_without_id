@@ -1,3 +1,8 @@
+"""
+@author: tenghehan
+
+对 image sequence 作 detection，并将 detection 结果绘制在图片序列上，并合成视频.
+"""
 import os
 import cv2
 import time

@@ -1,3 +1,10 @@
+"""
+@author: tenghehan
+
+按照 configs/auto.yml 中的 datasets list顺序，对每个 dataset 的同名 model_final.pth 执行：
+    train_net.py --eval-only
+    测量 reid model 在 Market1501, DukeMTMC 上的准确度.
+"""
 #!/usr/bin/env python
 from typing import List
 from attr import dataclass

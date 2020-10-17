@@ -1,3 +1,7 @@
+"""
+1. train reid model
+2. evaluate reid model weights (model_path) on specific datasets, e.g. Market1501, DukeMTMC
+"""
 #!/usr/bin/env python
 # encoding: utf-8
 """

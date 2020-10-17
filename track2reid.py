@@ -1,3 +1,8 @@
+"""
+@author: tenghehan
+
+处理 tracking 结果，生成对应的 reid 数据集.
+"""
 import os
 import shutil
 

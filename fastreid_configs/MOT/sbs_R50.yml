@@ -1,0 +1,7 @@
+_BASE_: "../Base-Strongerbaseline.yml"
+
+DATASETS:
+  NAMES: ("MOT",)
+  TESTS: ("MOT",)
+
+OUTPUT_DIR: "logs/mot/sbs_R50"

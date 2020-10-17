@@ -1,3 +1,8 @@
+"""
+@author: tenghehan
+
+对 image sequence 形式的视频数据作 tracking，保存 tracking 结果.
+"""
 import os
 import cv2
 import time

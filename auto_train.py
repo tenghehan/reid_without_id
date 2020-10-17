@@ -1,3 +1,11 @@
+"""
+@author: tenghehan
+
+按照 configs/auto.yml 中的 datasets list顺序，对每个 dataset 执行：
+    1. yolov3_deepsort_ims.py --model_path (n-1)_model
+    2. track2reid.py
+    3. train_net.py --finetune --MODEL.WEIGHTS (n-1)_model
+"""
 #!/usr/bin/env python
 from typing import List
 from attr import dataclass
