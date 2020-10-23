@@ -12,7 +12,10 @@ build/
 /datasets/
 /trash/
 /fastreid/weights/
-
+/detections/
+/tracking_results/
+/gt_results/
+/concat/
 
 # Files
 *.weights

@@ -1,0 +1,24 @@
+DEEPSORT:
+  REID_CKPT: "./deep_sort/deep/checkpoint/ckpt.t7"
+
+  MAX_DIST: 0.2
+  # the max consine distance in cascade matching
+
+  MIN_CONFIDENCE: 0.3
+  # min confidence in yolov3 detection
+
+  NMS_MAX_OVERLAP: 0.5
+
+  MAX_IOU_DISTANCE: 0.7
+  # the max distance in IOU matching
+
+  MAX_AGE: 10  
+  # max_age < time_since_update: confirmed -> deleted;
+  # time_since_update: predict -> t_s_u + 1, update(match) -> t_s_u = 0
+
+  N_INIT: 2  
+  # n_init hits: unconfirmed -> confirmed
+
+  NN_BUDGET: 100
+  # nn_budget: the length of the feature list of every track.
+  # the feature list contains the reid feature of the track in different frames.
