@@ -23,7 +23,7 @@ IMAGES_PATH (图片序列的路径，例'image_sequence/MOT16-05')
 
 
 
-### track2reid.py (已弃用)
+### track2reid.py (已弃用, 新的生成脚本已完成)
 功能：将tracking的结果转化为能用来训练reid模型的reid数据集。
 
 运行：
@@ -133,6 +133,8 @@ output/
 
 文件结构需要满足上述格式，脚本会自动根据名字对对应脚本作evaluate。
 ```
+### ......
+### 后来加的脚本懒得写这么细了，python文件开头都有简介，自己看自己回忆，不要依赖readme！
 
 ## 自动化脚本使用 (基本弃用)
 
