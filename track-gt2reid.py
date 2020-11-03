@@ -2,6 +2,7 @@
 @author: tenghehan
 
 处理 tracking 的 ground truth，生成对应的 reid 数据集.
+将 id 按照 partition rate 随机划分成 train 和 test.
 """
 import os
 import shutil

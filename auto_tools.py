@@ -46,12 +46,12 @@ def invoke_yolov3_deepsort_ims(index: int, dataset: Dataset):
     cmd.extend(["--config_file", config.model_config])
     cmd.extend([osp.join("image_sequence", dataset.name)])
     cmd.extend(["--fps", "%d" % dataset.fps])
-    cmd.extend(["--save_path", "./output/"])
-    cmd.extend(["--config_deepsort", "./configs/deep_sort.yaml"])
-    # cmd.extend([
-    #     "--model_path",
-    #     osp.join("fastreid/weights/BoT", "market_bot_R50.pth"),
-    # ])
+    cmd.extend(["--save_path", "./output_nogate/"])
+    cmd.extend(["--config_deepsort", "./configs/deep_sort_10_2.yaml"])
+    cmd.extend([
+        "--model_path",
+        osp.join("logs/mot/sbs_R50", "MOT16-gt", "model_final.pth"),
+    ])
     run(cmd)
 
 def invoke_track2reid(dataset: Dataset):
@@ -61,16 +61,36 @@ def invoke_track2reid(dataset: Dataset):
     cmd.extend(["--track_result_path", "./output/"])
     cmd.extend(["--save_path", "./reid_dataset"])
     run(cmd)
+    
+def invoke_train_net(index: int, dataset: Dataset):
+    cmd = ["python", "train_net.py"]
+    cmd.extend(["--config-file", config.model_config])
+    cmd.extend(["--specific_dataset", dataset.name])
+    # if index > 0:
+    #     last_dataset_name = config.datasets[index - 1].name
+    #     cmd.extend(["--finetune"])
+    #     cmd.extend([
+    #         "MODEL.WEIGHTS",
+    #         osp.join("logs/mot/bagtricks_R50", last_dataset_name, "model_final.pth"),
+    #     ])
+    run(cmd)
+
+def invoke_crop_detections(dataset: Dataset):
+    cmd = ["python", "crop_detections.py"]
+    cmd.extend([osp.join("image_sequence", dataset.name)])
+    run(cmd)
 
 
 def step(index: int, dataset: Dataset):
     invoke_yolov3_deepsort_ims(index, dataset)
-    invoke_track2reid(dataset)
+    # invoke_track2reid(dataset)
+    # invoke_crop_detections(dataset)
+    # invoke_train_net(index, dataset)
 
 
 def main():
 
-    for i in range(args.start_index, len(config.datasets)):
+    for i in range(args.start_index, min(args.end_index, len(config.datasets))):
         step(i, config.datasets[i])
 
 
@@ -79,6 +99,7 @@ if __name__ == "__main__":
     parser.add_argument("--config-file", type=str, required=True)
     parser.add_argument("-n", "--dry-run", action="store_true")
     parser.add_argument("--start_index", type=int, default=0)
+    parser.add_argument("--end_index", type=int, default=100)
 
     args = parser.parse_args()
     g_dry_run = args.dry_run

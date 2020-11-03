@@ -8,6 +8,7 @@ build/
 /output/
 /test/
 /reid_dataset/
+/reid_dataset_backup/
 /logs/
 /datasets/
 /trash/

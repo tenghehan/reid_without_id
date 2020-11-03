@@ -10,3 +10,8 @@ class txt_logger():
         with open(self.file_path, 'w') as f:
             for info in self.content:
                 f.write(info + '\n')
+
+    def output_tail(self):
+        with open(self.file_path, 'a') as f:
+            for info in self.content:
+                f.write(info + '\n')

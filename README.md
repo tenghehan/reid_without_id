@@ -23,7 +23,7 @@ IMAGES_PATH (图片序列的路径，例'image_sequence/MOT16-05')
 
 
 
-### track2reid.py
+### track2reid.py (已弃用)
 功能：将tracking的结果转化为能用来训练reid模型的reid数据集。
 
 运行：
@@ -79,13 +79,15 @@ logs/mot/bagtricks_R50/MOT16-05
     model_final.pth
 ```
 
-功能：测试reid模型的准确度(DukeMTMC Market1501)
+功能：测试reid模型的准确度(DukeMTMC Market1501 MOT16)
 
 运行：
 ```
 --eval_only
 --config-file (声明模型结构的yaml文件路径，暂时使用'fastreid_configs/MOT/bagtricks_R50.yml'(ResNet50 + BNNeck))
-DATASETS.TESTS ("DukeMTMC",) or ("Market1501",) 
+--specific_dataset (如果是MOT16的话需要)
+--imageNet (测量imageNet pretrained model的性能，无需MODEL.WEIGHTS)
+DATASETS.TESTS ("DukeMTMC",) or ("Market1501",) or ("MOT",)
 MODEL.WEIGHTS logs/mot/bagtricks_R50/MOT16-06/model_final.pth
 OUTPUT_DIR "logs/mot/bagtricks_R50/MOT1-16-06/dukemtmc or market1501"
 ```
@@ -132,9 +134,9 @@ output/
 文件结构需要满足上述格式，脚本会自动根据名字对对应脚本作evaluate。
 ```
 
-## 自动化脚本使用
+## 自动化脚本使用 (基本弃用)
 
-### track and train
+### track and train 
 #### 思路
 ```
     easy to hard: dataset01, dataset02,...

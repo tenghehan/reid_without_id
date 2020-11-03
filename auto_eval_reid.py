@@ -53,8 +53,8 @@ def evaluate_dukemtmc(index: int, dataset: Dataset):
     cmd = ["python", "train_net.py", "--eval-only"]
     cmd.extend(["--config-file", config.model_config])
     cmd.extend(["DATASETS.TESTS", "(\"DukeMTMC\",)"])
-    cmd.extend(["MODEL.WEIGHTS", osp.join("logs/mot/bagtricks_R50", dataset.name, "model_final.pth")])
-    cmd.extend(["OUTPUT_DIR", osp.join("logs/mot/bagtricks_R50", dataset.name, "dukemtmc")])
+    cmd.extend(["MODEL.WEIGHTS", osp.join("logs_30/mot/sbs_R50", dataset.name, "model_final.pth")])
+    cmd.extend(["OUTPUT_DIR", osp.join("logs_30/mot/sbs_R50", dataset.name, "dukemtmc")])
 
     run(cmd)
 
@@ -67,8 +67,8 @@ def evaluate_market1501(index: int, dataset: Dataset):
     cmd = ["python", "train_net.py", "--eval-only"]
     cmd.extend(["--config-file", config.model_config])
     cmd.extend(["DATASETS.TESTS", "(\"Market1501\",)"])
-    cmd.extend(["MODEL.WEIGHTS", osp.join("logs/mot/bagtricks_R50", dataset.name, "model_final.pth")])
-    cmd.extend(["OUTPUT_DIR", osp.join("logs/mot/bagtricks_R50", dataset.name, "market1501")])
+    cmd.extend(["MODEL.WEIGHTS", osp.join("logs_30/mot/sbs_R50", dataset.name, "model_final.pth")])
+    cmd.extend(["OUTPUT_DIR", osp.join("logs_30/mot/sbs_R50", dataset.name, "market1501")])
 
     run(cmd)
 

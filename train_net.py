@@ -11,6 +11,7 @@
 
 import sys
 import os.path as osp
+import random
 
 sys.path.append('.')
 
@@ -28,7 +29,7 @@ def setup(args):
     cfg.merge_from_list(args.opts)
 
     cfg.SPECIFIC_DATASET = args.specific_dataset
-    if args.specific_dataset is not None:
+    if args.specific_dataset is not None and not args.eval_only:
         cfg.OUTPUT_DIR = osp.join(cfg.OUTPUT_DIR, args.specific_dataset)
     cfg.freeze()
     default_setup(cfg, args)
@@ -37,7 +38,7 @@ def setup(args):
 
 def main(args):
     cfg = setup(args)
-
+    
     if args.eval_only:
         cfg.defrost()
         cfg.MODEL.BACKBONE.PRETRAIN = args.imageNet
@@ -58,6 +59,9 @@ def main(args):
 
 
 if __name__ == "__main__":
+    rand_seed = 50
+    random.seed(rand_seed)
+
     args = default_argument_parser().parse_args()
     print("Command Line Args:", args)
     launch(
